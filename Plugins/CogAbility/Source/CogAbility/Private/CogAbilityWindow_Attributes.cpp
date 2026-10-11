@@ -176,7 +176,11 @@ void FCogAbilityWindow_Attributes::RenderContent()
                 TArray<FGameplayAttribute> AllAttributes;
                 for (TFieldIterator<FProperty> It(AttributeSet->GetClass()); It; ++It)
                 {
-                    if (!FGameplayAttribute::IsSupportedProperty(*It))
+                    const FProperty* Property = *It;
+                    const FStructProperty* StructProperty = CastField<FStructProperty>(Property);
+                    const bool bIsSupported = (StructProperty && StructProperty->Struct == FGameplayAttributeData::StaticStruct()) || (Property && Property->IsA<FNumericProperty>());
+
+                    if (!bIsSupported)
                     {
                         continue;
                     }
